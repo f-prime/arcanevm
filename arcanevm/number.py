@@ -10,7 +10,8 @@ class Number(object):
         secret_key: api_low_level.NuFHESecretKey = None,
     ):
         self.number: int = number
-        self.binary: List[int] = self.create_binary_array()
+        self.binary: List[List[int]] = self.create_binary_array()
+        self.encrypted_binary: List[List[lwe.LweSampleArray]] = None
         self.context: Context = context
         self.secret_key: api_low_level.NuFHESecretKey = secret_key
 
@@ -19,23 +20,32 @@ class Number(object):
         number: int = self.number
 
         while number > 0:
-            binary.insert(0, number % 2)
+            binary.insert(0, [number % 2])
             number //= 2
 
-        while len(binary) < 16:
-            binary.insert(0, 0)
+        while len(binary) < 8:
+            binary.insert(0, [0])
 
-        binary = binary[:16]  # All numbers are 16 bits
+        binary = binary[:8]  # All numbers are 8 bits
 
         return binary
 
-    def encrypt(self) -> lwe.LweSampleArray:
-        return self.context.encrypt(self.secret_key, self.binary)
+    def encrypt(self) -> List[lwe.LweSampleArray]:
+        self.encrypted_binary = [self.context.encrypt(self.secret_key, bit) for bit in self.binary]
+        return self.encrypted_binary
 
     @staticmethod
     def decrypt(
         context: Context,
         secret_key: api_low_level.NuFHESecretKey,
         data: lwe.LweSampleArray,
-    ) -> List[int]:
-        return list(map(int, context.decrypt(secret_key, data)))
+    ) -> List[List[int]]:
+        
+        output = []
+
+        for element in data:
+            output.append(
+                list(map(int, context.decrypt(secret_key, element)))
+            )
+
+        return output
