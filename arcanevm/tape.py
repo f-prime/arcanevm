@@ -2,8 +2,14 @@ from nufhe import Context, lwe, api_low_level
 from number import Number
 from typing import List
 
+
 class Tape(object):
-    def __init__(self, context: Context, secret_key: api_low_level.NuFHESecretKey, length: int = 10):
+    def __init__(
+        self,
+        context: Context,
+        secret_key: api_low_level.NuFHESecretKey,
+        length: int = 10,
+    ):
         self.context: Context = context
         self.length: int = length
         self.secret_key: api_low_level.NuFHESecretKey = secret_key
@@ -18,4 +24,7 @@ class Tape(object):
         return tape
 
     def decrypt_tape(self) -> List[List[int]]:
-        return [Number.decrypt(self.context, self.secret_key, cell.encrypted_binary) for cell in self.tape]
+        return [
+            Number.decrypt(self.context, self.secret_key, cell.encrypted_binary)
+            for cell in self.tape
+        ]

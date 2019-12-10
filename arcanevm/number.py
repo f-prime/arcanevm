@@ -1,6 +1,7 @@
 from typing import List
 from nufhe import Context, lwe, api_low_level
 
+
 class Number(object):
     def __init__(
         self,
@@ -8,7 +9,7 @@ class Number(object):
         context: Context = None,
         secret_key: api_low_level.NuFHESecretKey = None,
     ):
-    
+
         self.context: Context = context
         self.secret_key: api_low_level.NuFHESecretKey = secret_key
         self.number: int = number
@@ -32,7 +33,9 @@ class Number(object):
         return binary
 
     def encrypt(self) -> List[lwe.LweSampleArray]:
-        self.encrypted_binary = [self.context.encrypt(self.secret_key, bit) for bit in self.binary]
+        self.encrypted_binary = [
+            self.context.encrypt(self.secret_key, bit) for bit in self.binary
+        ]
         return self.encrypted_binary
 
     @staticmethod
@@ -41,12 +44,10 @@ class Number(object):
         secret_key: api_low_level.NuFHESecretKey,
         data: lwe.LweSampleArray,
     ) -> List[List[int]]:
-        
+
         output = []
 
         for element in data:
-            output.append(
-                list(map(int, context.decrypt(secret_key, element)))
-            )
+            output.append(list(map(int, context.decrypt(secret_key, element))))
 
         return output
