@@ -5,29 +5,29 @@ class Number(object):
         self.logic = logic
 
     @staticmethod
-    def from_plaintext(number, context, secret, logic):
-        array = Number.create_binary_array(number)
+    def from_plaintext(number, context, secret, logic, size=8):
+        array = Number.create_binary_array(number, size)
         for i, bit in enumerate(array):
             array[i] = context.encrypt(secret, bit)
         return Number(logic, array) 
     
     @staticmethod
-    def create_binary_array(number):
+    def create_binary_array(number, size):
         binary = []
 
         while number > 0:
             binary.insert(0, [number % 2])
             number //= 2
 
-        while len(binary) < 8:
+        while len(binary) < size:
             binary.insert(0, [0])
 
-        binary = binary[:8]  # All numbers are 8 bits
+        binary = binary[:size]  # All numbers are 8 bits
 
         return binary
 
 
-    def decrypt(self, secret, context):
+    def decrypt(self, context, secret):
         output = []
 
         for bit in self.bit_array:
@@ -36,9 +36,19 @@ class Number(object):
         return output
 
     def __do_operation(self, bit_array, op):
+        if (len(bit_array) != 1 and len(self.bit_array) != 1) and len(bit_array) != len(self.bit_array):
+            raise ValueError("Bit arrays different sizes.")
+        
+        iterate_over = bit_array
+        if len(bit_array) == 1:
+            iterate_over = self.bit_array
+        else:
+            bit_array = self.bit_array
+
         output = []
-        for i, bit in enumerate(bit_array):
-            output.append(op(bit, self.bit_array[i]))
+        for i, bit in enumerate(iterate_over):
+            bit_on = bit_array[0] if len(bit_array) == 1 else bit_array[i]
+            output.append(op(bit, bit_on))
         return Number(self.logic, output)
 
     def __str__(self):

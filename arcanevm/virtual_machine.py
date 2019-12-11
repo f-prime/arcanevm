@@ -4,54 +4,22 @@ from typing import List
 
 
 class VirtualMachine(object):
-    def __init__(
-        self,
-        context: Context,
-        vm,
-        secret_key: api_low_level.NuFHESecretKey,
-        tape: List[lwe.LweSampleArray],
-        data_ptr: int = 0,
-    ):
-        self.vm = vm
-        self.context: Context = context
-        self.data_ptr: Number = Number(data_ptr, context=context, secret_key=secret_key)
-        self.secret_key: api_low_level.NuFHESecretKey = secret_key
+    def __init__(self, tape, data_ptr, flag, one, zero, encrypted_indices):
         self.tape = tape
+        self.data_ptr = data_ptr
+        self.flag = flag
+        self.one = one
+        self.zero = zero
+        self.encrypted_indices = encrypted_indices
 
     def step(self, inc_data_ptr, inc_data_cell):
-        for index in range(len(self.tape.tape)):
-            flag = self.context.encrypt(self.secret_key, [1])
+        for i, encrypted_index in enumerate(self.encrypted_indices):
+            flag = self.flag | self.one # Set flag to 1
 
-            encrypted_index: Number = Number(
-                index, context=self.context, secret_key=self.secret_key
-            )
-            encrypted_binary: List[int] = self.tape.tape[index].encrypted_binary
+            encrypted_binary = self.tape.tape[i]
 
-            for i, bit in enumerate(self.data_ptr.encrypted_binary):
-                flag = self.vm.gate_and(
-                    self.vm.gate_xnor(encrypted_index.encrypted_binary[i], bit), flag
-                )
+            flag = flag & ~(encrypted_index ^ self.data_ptr) # Check if index equals pointer
+            inc_data_cell_anded = inc_data_cell & flag
+            self.tape.tape[i] = self.tape.tape[i] ^ inc_data_cell_anded
 
-            print("Current flag value:", self.context.decrypt(self.secret_key, flag))
-
-            cells: List[int] = self.tape.tape[index]  # Current cell number
-
-            # AND instruction with flag. If flag is 0 then wrong cell else correct cell
-
-            inc_data_cell_anded = []
-
-            for i in range(len(inc_data_cell.encrypted_binary)):
-                inc_data_cell_anded.append(
-                    self.vm.gate_and(flag, inc_data_cell.encrypted_binary[i])
-                )
-
-            print(
-                "Instruction AND:",
-                Number.decrypt(self.context, self.secret_key, inc_data_cell_anded),
-            )
-
-            print("Cells", cells)
-            for i in range(len(inc_data_cell_anded)):
-                cells.encrypted_binary[i] = self.vm.gate_xor(
-                    inc_data_cell_anded[i], cells.encrypted_binary[i]
-                )
+            print("Cell:", i, "processed") 

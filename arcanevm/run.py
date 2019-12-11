@@ -1,4 +1,3 @@
-from typing import List
 from number import Number
 from tape import Tape
 from virtual_machine import VirtualMachine
@@ -7,8 +6,9 @@ import pprint
 
 
 def run():
-    ctx: nufhe.Context = nufhe.Context()
+    ctx = nufhe.Context()
     secret_key, cloud_key = ctx.make_key_pair()
+    vm = ctx.make_virtual_machine(cloud_key) 
 
     # Create tape
     # Create VM
@@ -16,28 +16,32 @@ def run():
     # Get output tape encrypted
     # Decrypt tape to get execution results
 
-    vm = ctx.make_virtual_machine(cloud_key)
-    n1 = Number.from_plaintext(2, ctx, secret_key, vm)   
-    n2 = Number.from_plaintext(1, ctx, secret_key, vm)
+    tape = Tape()
+    
+    # Create tape of size n
+    
+    n = 2
 
-    print(n1.decrypt(secret_key, ctx))
-    print(n2.decrypt(secret_key, ctx))
+    indices = [] # Encrypt indices before feeding into VM
+    for x in range(n):
+        tape.add_cell(Number.from_plaintext(0, ctx, secret_key, vm))
+        indices.append(Number.from_plaintext(x, ctx, secret_key, vm))
 
-    anded = n1 ^ n2
-    print(anded.decrypt(secret_key, ctx))
+    flag = Number.from_plaintext(1, ctx, secret_key, vm, size=1) # Flag for conditions
+    one = Number.from_plaintext(1, ctx, secret_key, vm, size=1) # A one
+    zero = Number.from_plaintext(0, ctx, secret_key, vm, size=1) # A zero
+    data_ptr = Number.from_plaintext(0, ctx, secret_key, vm)  # Cell to perform op on
 
-    """
-    tape: List[nufhe.lwe.LweSampleArray] = Tape(ctx, secret_key, length=3)
+    blind_machine = VirtualMachine(tape, data_ptr, flag, one, zero, indices)
+    
+    # Add 1 instruction
 
-    vm: VirtualMachine = VirtualMachine(ctx, vm, secret_key, tape, data_ptr=1)
+    inc_data_ptr = Number.from_plaintext(0, ctx, secret_key, vm)
+    inc_data_cell = Number.from_plaintext(1, ctx, secret_key, vm)
 
-    inc_data_ptr: Number = Number(0, context=ctx, secret_key=secret_key)
-    inc_data_cell: Number = Number(1, context=ctx, secret_key=secret_key)
+    blind_machine.step(inc_data_ptr, inc_data_cell)
 
-    vm.step(inc_data_ptr, inc_data_cell)
-
-    pprint.pprint(tape.decrypt_tape())
-    """
+    pprint.pprint(tape.decrypt_tape(ctx, secret_key))
 
 if __name__ == "__main__":
     run()
