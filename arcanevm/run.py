@@ -6,7 +6,7 @@ import nufhe
 import pprint
 
 
-def run() -> None:
+def run():
     ctx: nufhe.Context = nufhe.Context()
     secret_key, cloud_key = ctx.make_key_pair()
 
@@ -17,7 +17,16 @@ def run() -> None:
     # Decrypt tape to get execution results
 
     vm = ctx.make_virtual_machine(cloud_key)
+    n1 = Number.from_plaintext(2, ctx, secret_key, vm)   
+    n2 = Number.from_plaintext(1, ctx, secret_key, vm)
 
+    print(n1.decrypt(secret_key, ctx))
+    print(n2.decrypt(secret_key, ctx))
+
+    anded = n1 ^ n2
+    print(anded.decrypt(secret_key, ctx))
+
+    """
     tape: List[nufhe.lwe.LweSampleArray] = Tape(ctx, secret_key, length=3)
 
     vm: VirtualMachine = VirtualMachine(ctx, vm, secret_key, tape, data_ptr=1)
@@ -28,7 +37,7 @@ def run() -> None:
     vm.step(inc_data_ptr, inc_data_cell)
 
     pprint.pprint(tape.decrypt_tape())
-
+    """
 
 if __name__ == "__main__":
     run()
