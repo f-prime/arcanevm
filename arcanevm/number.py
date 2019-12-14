@@ -1,15 +1,17 @@
+import utils
 
 class Number(object):
-    def __init__(self, logic, bit_array):
+    def __init__(self, bit_array):
+        if type(bit_array) != list:
+            bit_array = [bit_array]
         self.bit_array = bit_array
-        self.logic = logic
 
     @staticmethod
-    def from_plaintext(number, context, secret, logic, size=8):
+    def from_plaintext(number, context, secret, size=8):
         array = Number.create_binary_array(number, size)
         for i, bit in enumerate(array):
             array[i] = context.encrypt(secret, bit)
-        return Number(logic, array) 
+        return Number(array) 
     
     @staticmethod
     def create_binary_array(number, size):
@@ -18,7 +20,7 @@ class Number(object):
         while number > 0:
             binary.insert(0, [number % 2])
             number //= 2
-
+        
         while len(binary) < size:
             binary.insert(0, [0])
 
@@ -27,12 +29,18 @@ class Number(object):
         return binary
 
 
-    def decrypt(self, context, secret):
+    def decrypt(self, context, secret, decimal=False):
         output = []
 
         for bit in self.bit_array:
             output.append(list(map(int, context.decrypt(secret, bit))))
 
+        if decimal:
+            s = 0
+            for i, num in enumerate(output[::-1]):
+                if num[0]:
+                    s += 2 ** i
+            return s
         return output
 
     def __do_operation(self, bit_array, op):
@@ -49,25 +57,39 @@ class Number(object):
         for i, bit in enumerate(iterate_over):
             bit_on = bit_array[0] if len(bit_array) == 1 else bit_array[i]
             output.append(op(bit, bit_on))
-        return Number(self.logic, output)
+        
+        return Number(output)
 
     def __str__(self):
-        return str(self.bit_array)
+        return f"Number(size={len(self.bit_array)})"
 
     def __and__(self, num):
-        return self.__do_operation(num.bit_array, self.logic.gate_and)
+        return self.__do_operation(num.bit_array, utils.logic.gate_and)
 
     def __or__(self, num):
-        return self.__do_operation(num.bit_array, self.logic.gate_or)
+        return self.__do_operation(num.bit_array, utils.logic.gate_or)
 
     def __xor__(self, num):
-        return self.__do_operation(num.bit_array, self.logic.gate_xor)
+        return self.__do_operation(num.bit_array, utils.logic.gate_xor)
 
     def __invert__(self):
-        return Number(self.logic, [self.logic.gate_not(bit) for bit in self.bit_array])
+        return Number([utils.logic.gate_not(bit) for bit in self.bit_array])
 
     def __add__(self, num):
-        raise NotImplemented("Add not yet implemented")
+        carry = Number(utils.zero.bit_array)
+        
+        output = []
+        
+        # Treverse in reverse
+    
+        for bit_i in range(len(self.bit_array))[::-1]:
+            bit_1 = Number(self.bit_array[bit_i])
+            bit_2 = Number(num.bit_array[bit_i])
+           
+            output.append((bit_1 ^ bit_2 ^ carry).bit_array[0])
+            carry = (bit_1 & bit_2) | (carry & (bit_1 ^ bit_2))  # Fix this carry bit 
+        
+        return Number(output[::-1])
 
     def __sub__(self, num):
         raise NotImplemented("Subtraction not yet implemented") 
