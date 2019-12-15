@@ -87,13 +87,26 @@ class Number(object):
             bit_2 = Number(num.bit_array[bit_i])
            
             output.append((bit_1 ^ bit_2 ^ carry).bit_array[0])
-            carry = (bit_1 & bit_2) | (carry & (bit_1 ^ bit_2))  # Fix this carry bit 
+            carry = (bit_1 & bit_2) | (carry & (bit_1 ^ bit_2))
         
         return Number(output[::-1])
 
     def __sub__(self, num):
-        raise NotImplemented("Subtraction not yet implemented") 
+        borrow = Number(utils.one.bit_array)
 
+        output = []
+        print("SUBTRACT")
+
+        # Traverse in reverse
+
+        for bit_i in range(len(self.bit_array))[::-1]:
+            bit_1 = Number(self.bit_array[bit_i])
+            bit_2 = Number(num.bit_array[bit_i])
+
+            output.append(((bit_1 ^ bit_2) ^ borrow).bit_array[0])
+            borrow = (~bit_1 & borrow) + (~bit_1 & bit_2) + (bit_2 & borrow) # Figure out this borrow 
+
+        return Number(output)
     def __mul__(self, num):
         raise NotImplemented("Multiply not yet implemented")
 

@@ -47,14 +47,16 @@ def run():
     
     #print(utils.one + utils.one)
     
-    A = 129
-    B = 5
+    A = 127
+    B = 1
 
     sum = Number.from_plaintext(A, ctx, secret_key) + Number.from_plaintext(B, ctx, secret_key)
-    
+    diff = Number.from_plaintext(A, ctx, secret_key) - Number.from_plaintext(B, ctx, secret_key)
+
     print(sum.decrypt(ctx, secret_key))
     print(A, "+", B, "=", sum.decrypt(ctx, secret_key, decimal=True))
-
+    print(diff.decrypt(ctx, secret_key))
+    print(A, '-', B, "=", diff.decrypt(ctx, secret_key, decimal=True)) 
     #pprint.pprint(tape.decrypt_tape(ctx, secret_key))
 
 if __name__ == "__main__":
