@@ -14,8 +14,8 @@ class TestNumber(unittest.TestCase):
         self.three = Number.from_plaintext(3, self.context, self.sk)
         self.zero = Number.from_plaintext(0, self.context, self.sk)
 
-        utils.zero = self.zero
-        utils.one = self.one
+        utils.zero = Number.from_plaintext(0, self.context, self.sk, size=1)
+        utils.one = Number.from_plaintext(1, self.context, self.sk, size=1)
 
     def test_binary(self):
         one = Number.create_binary_array(1, 8)
