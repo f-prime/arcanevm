@@ -14,6 +14,8 @@ def test_suite():
     suite.addTest(TestNumber("test_add"))
     suite.addTest(TestNumber("test_from_plaintext"))
     suite.addTest(TestNumber("test_decrypt"))
+    suite.addTest(TestNumber("test_increment"))
+    suite.addTest(TestNumber("test_decrement"))
     
     suite.addTest(TestTape("test_create_tape"))
     suite.addTest(TestTape("test_add_cell"))

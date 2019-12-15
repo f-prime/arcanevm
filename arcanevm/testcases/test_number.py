@@ -14,8 +14,8 @@ class TestNumber(unittest.TestCase):
         self.three = Number.from_plaintext(3, self.context, self.sk)
         self.zero = Number.from_plaintext(0, self.context, self.sk)
 
-        utils.zero = self.zero
-        utils.one = self.one
+        utils.zero = Number.from_plaintext(0, self.context, self.sk, size=1)
+        utils.one = Number.from_plaintext(1, self.context, self.sk, size=1)
 
     def test_binary(self):
         one = Number.create_binary_array(1, 8)
@@ -74,6 +74,25 @@ class TestNumber(unittest.TestCase):
         assert(three_plus_two.decrypt(self.context, self.sk, decimal=True) == 5)
         assert(three_plus_three.decrypt(self.context, self.sk, decimal=True) == 6)
 
+    def test_increment(self):
+        zero_inc = self.zero.increment()
+        one_inc = self.one.increment()
+        two_inc = self.two.increment()
+        three_inc = self.three.increment()
+
+        self.assertEqual(zero_inc.decrypt(self.context, self.sk, decimal=True), 1)
+        self.assertEqual(one_inc.decrypt(self.context, self.sk, decimal=True), 2)
+        self.assertEqual(two_inc.decrypt(self.context, self.sk, decimal=True), 3)
+        self.assertEqual(three_inc.decrypt(self.context, self.sk, decimal=True), 4)
+
+    def test_decrement(self):
+        one_dec = self.one.decrement()
+        two_dec = self.two.decrement()
+        three_dec = self.three.decrement()
+
+        self.assertEqual(one_dec.decrypt(self.context, self.sk, decimal=True), 0)
+        self.assertEqual(two_dec.decrypt(self.context, self.sk, decimal=True), 1)
+        self.assertEqual(three_dec.decrypt(self.context, self.sk, decimal=True), 2)
 
     def test_from_plaintext(self):
         one28 = Number.from_plaintext(128, self.context, self.sk)
