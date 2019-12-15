@@ -107,6 +107,29 @@ class Number(object):
             borrow = (~bit_1 & borrow) + (~bit_1 & bit_2) + (bit_2 & borrow) # Figure out this borrow 
 
         return Number(output)
+
+    def increment(self):
+        carry = Number(utils.one.bit_array)
+        output = []
+
+        for bit_i in range(len(self.bit_array))[::-1]:
+            bit_1 = Number(self.bit_array[bit_i])
+            output.append((bit_1 ^ carry).bit_array[0])
+            carry = bit_1 & carry
+
+        return Number(output[::-1])
+
+    def decrement(self):
+        borrow = Number(utils.one.bit_array)
+        output = []
+
+        for bit_i in range(len(self.bit_array))[::-1]:
+            bit_1 = Number(self.bit_array[bit_i])
+            output.append((bit_1 ^ borrow).bit_array[0])
+            borrow = ~bit_1 & borrow
+
+        return Number(output[::-1])
+
     def __mul__(self, num):
         raise NotImplemented("Multiply not yet implemented")
 
