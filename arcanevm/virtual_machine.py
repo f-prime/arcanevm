@@ -16,6 +16,6 @@ class VirtualMachine(object):
 
             flag = flag & ~(encrypted_index ^ utils.data_ptr) # Check if index equals pointer
             inc_data_cell_anded = inc_data_cell & flag
-            self.tape.tape[i] = self.tape.tape[i] ^ inc_data_cell_anded
+            self.tape.tape[i] = self.tape.tape[i] + inc_data_cell_anded
 
             print("Cell:", i, "processed") 
