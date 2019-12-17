@@ -92,22 +92,8 @@ class Number(object):
         return Number(output[::-1])
 
     def __sub__(self, num):
-        borrow = Number(utils.one.bit_array)
-
-        output = []
-        print("SUBTRACT")
-
-        # Traverse in reverse
-
-        for bit_i in range(len(self.bit_array))[::-1]:
-            bit_1 = Number(self.bit_array[bit_i])
-            bit_2 = Number(num.bit_array[bit_i])
-
-            output.append(((bit_1 ^ bit_2) ^ borrow).bit_array[0])
-            borrow = ~(bit_1 ^ bit_2) | (~bit_1 & bit_2) 
-
-        return Number(output)
-
+        raise NotImplemented("Subtraction is not yet implemented.")
+            
     def increment(self):
         carry = Number(utils.one.bit_array)
         output = []
