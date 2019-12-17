@@ -45,4 +45,4 @@ class TestVirtualMachine(unittest.TestCase):
 
         self.blind_machine.step(incr_data_ptr, inc_data_cell)
 
-        assert(self.tape.decrypt_tape(self.context, self.secret_key) == [[[0], [0], [0], [0], [0], [0], [0], [1]], [[0], [0], [0], [0], [0], [0], [0], [0]]])
+        self.assertEqual(self.tape.decrypt_tape(self.context, self.secret_key), [[[0], [0], [0], [0], [0], [0], [0], [1]], [[0], [0], [0], [0], [0], [0], [0], [0]]])

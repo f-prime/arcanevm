@@ -38,13 +38,16 @@ def run():
     # Add 1 instruction
     
     
-    """for x in range(3):
+    """
+    for x in range(3):
         inc_data_ptr = Number.from_plaintext(0, ctx, secret_key)
         inc_data_cell = Number.from_plaintext(1, ctx, secret_key)
 
         blind_machine.step(inc_data_ptr, inc_data_cell)
-    """
     
+
+    """
+
     #print(utils.one + utils.one)
     
     A = 127
@@ -57,7 +60,11 @@ def run():
     print(A, "+", B, "=", sum.decrypt(ctx, secret_key, decimal=True))
     print(diff.decrypt(ctx, secret_key))
     print(A, '-', B, "=", diff.decrypt(ctx, secret_key, decimal=True)) 
+
+
     #pprint.pprint(tape.decrypt_tape(ctx, secret_key))
+
+
 
 if __name__ == "__main__":
     run()

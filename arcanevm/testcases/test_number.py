@@ -25,54 +25,54 @@ class TestNumber(unittest.TestCase):
 
         flag = Number.create_binary_array(1, 1)
 
-        assert(two56 == [[1],[0],[0],[0],[0],[0],[0],[0]])
-        assert(one == [[0],[0],[0],[0],[0],[0],[0],[1]])
-        assert(two == [[0],[0],[0],[0],[0],[0],[1],[0]])
-        assert(three == [[0],[0],[0],[0],[0],[0],[1],[1]])
-        assert(flag == [[1]])
+        self.assertEqual(two56, [[1],[0],[0],[0],[0],[0],[0],[0]])
+        self.assertEqual(one, [[0],[0],[0],[0],[0],[0],[0],[1]])
+        self.assertEqual(two, [[0],[0],[0],[0],[0],[0],[1],[0]])
+        self.assertEqual(three, [[0],[0],[0],[0],[0],[0],[1],[1]])
+        self.assertEqual(flag, [[1]])
 
     def test_and(self):
         one_and_two = self.one & self.two
         two_and_three = self.two & self.three
         one_and_three = self.one & self.three
 
-        assert(one_and_two.decrypt(self.context, self.sk, decimal=True) == 0)
-        assert(two_and_three.decrypt(self.context, self.sk,decimal=True) == 2)
-        assert(one_and_three.decrypt(self.context, self.sk, decimal=True) == 1)
+        self.assertEqual(one_and_two.decrypt(self.context, self.sk, decimal=True), 0)
+        self.assertEqual(two_and_three.decrypt(self.context, self.sk,decimal=True), 2)
+        self.assertEqual(one_and_three.decrypt(self.context, self.sk, decimal=True), 1)
 
     def test_or(self):
         one_or_two = self.one | self.two
         two_or_three = self.two | self.three
         one_or_three = self.one | self.three
 
-        assert(one_or_two.decrypt(self.context, self.sk, decimal=True) == 3)
-        assert(two_or_three.decrypt(self.context, self.sk, decimal=True) == 3)
-        assert(one_or_three.decrypt(self.context, self.sk, decimal=True) == 3)
+        self.assertEqual(one_or_two.decrypt(self.context, self.sk, decimal=True), 3)
+        self.assertEqual(two_or_three.decrypt(self.context, self.sk, decimal=True), 3)
+        self.assertEqual(one_or_three.decrypt(self.context, self.sk, decimal=True), 3)
 
     def test_xor(self):
         one_xor_two = self.one ^ self.two
         two_xor_three = self.two ^ self.three
         one_xor_three = self.one ^ self.three
 
-        assert(one_xor_two.decrypt(self.context, self.sk, decimal=True) == 3)
-        assert(two_xor_three.decrypt(self.context, self.sk, decimal=True) == 1)
-        assert(one_xor_three.decrypt(self.context, self.sk, decimal=True) == 2)
+        self.assertEqual(one_xor_two.decrypt(self.context, self.sk, decimal=True), 3)
+        self.assertEqual(two_xor_three.decrypt(self.context, self.sk, decimal=True), 1)
+        self.assertEqual(one_xor_three.decrypt(self.context, self.sk, decimal=True), 2)
    
     def test_not(self):
         not_zero = ~self.zero
         not_one = ~self.one
 
-        assert(not_zero.decrypt(self.context, self.sk, decimal=True) == 255)
-        assert(not_one.decrypt(self.context, self.sk, decimal=True) == 254)
+        self.assertEqual(not_zero.decrypt(self.context, self.sk, decimal=True), 255)
+        self.assertEqual(not_one.decrypt(self.context, self.sk, decimal=True), 254)
 
     def test_add(self):
         one_plus_one = self.one + self.one
         three_plus_two = self.three + self.two
         three_plus_three = self.three + self.three
       
-        assert(one_plus_one.decrypt(self.context, self.sk, decimal=True) == 2)
-        assert(three_plus_two.decrypt(self.context, self.sk, decimal=True) == 5)
-        assert(three_plus_three.decrypt(self.context, self.sk, decimal=True) == 6)
+        self.assertEqual(one_plus_one.decrypt(self.context, self.sk, decimal=True), 2)
+        self.assertEqual(three_plus_two.decrypt(self.context, self.sk, decimal=True), 5)
+        self.assertEqual(three_plus_three.decrypt(self.context, self.sk, decimal=True), 6)
 
     def test_increment(self):
         zero_inc = self.zero.increment()
@@ -98,9 +98,9 @@ class TestNumber(unittest.TestCase):
         one28 = Number.from_plaintext(128, self.context, self.sk)
         too_big = Number.from_plaintext(512, self.context, self.sk, size=8)
         
-        assert(too_big.decrypt(self.context, self.sk, decimal=True) == 128)
-        assert(one28.decrypt(self.context, self.sk, decimal=True) == 128)
+        self.assertEqual(too_big.decrypt(self.context, self.sk, decimal=True), 128)
+        self.assertEqual(one28.decrypt(self.context, self.sk, decimal=True), 128)
 
     def test_decrypt(self):
-        assert(self.one.decrypt(self.context, self.sk, decimal=True) == 1)
-        assert(self.two.decrypt(self.context, self.sk, decimal=True) == 2)
+        self.assertEqual(self.one.decrypt(self.context, self.sk, decimal=True), 1)
+        self.assertEqual(self.two.decrypt(self.context, self.sk, decimal=True), 2)

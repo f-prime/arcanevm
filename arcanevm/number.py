@@ -104,7 +104,7 @@ class Number(object):
             bit_2 = Number(num.bit_array[bit_i])
 
             output.append(((bit_1 ^ bit_2) ^ borrow).bit_array[0])
-            borrow = (~bit_1 & borrow) + (~bit_1 & bit_2) + (bit_2 & borrow) # Figure out this borrow 
+            borrow = ~(bit_1 ^ bit_2) | (~bit_1 & bit_2) 
 
         return Number(output)
 

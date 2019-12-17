@@ -14,11 +14,11 @@ class TestTape(unittest.TestCase):
     def test_create_tape(self):
         tape = Tape()
 
-        assert(tape.tape == [])
+        self.assertEqual(tape.tape, [])
 
     def test_add_cell(self):
         tape = Tape()
         tape.add_cell(self.zero)
         tape.add_cell(self.one)
 
-        assert(tape.decrypt_tape(self.context, self.sk) == [[[0], [0], [0], [0], [0], [0], [0], [0]], [[0], [0], [0], [0], [0], [0], [0], [1]]])
+        self.assertEqual(tape.decrypt_tape(self.context, self.sk), [[[0], [0], [0], [0], [0], [0], [0], [0]], [[0], [0], [0], [0], [0], [0], [0], [1]]])
