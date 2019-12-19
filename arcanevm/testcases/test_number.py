@@ -49,6 +49,13 @@ class TestNumber(unittest.TestCase):
         self.assertEqual(two_or_three.decrypt(self.sk, decimal=True), 3)
         self.assertEqual(one_or_three.decrypt(self.sk, decimal=True), 3)
 
+    def test_mux(self):
+        out_two = self.one.mux(self.two, self.three)
+        out_three = self.zero.mux(self.two, self.three)
+
+        self.assertEqual(out_two.decrypt(self.sk, decimal=True), 2)
+        self.assertEqual(out_three.decrypt(self.sk, decimal=True), 3)
+
     def test_xor(self):
         one_xor_two = self.one ^ self.two
         two_xor_three = self.two ^ self.three

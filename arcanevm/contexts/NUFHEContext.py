@@ -36,6 +36,8 @@ class NUFHEContext(context.Context):
         return self.vm.gate_nor(bit1, bit2)
 
     def gate_mux(self, bit1, bit2, bit3):
+        # bit2 if bit1 else bit3
+
         return self.vm.gate_mux(bit1, bit2, bit3)
 
     def gate_and(self, bit1, bit2):

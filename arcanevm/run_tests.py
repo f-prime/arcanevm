@@ -11,6 +11,7 @@ def test_suite():
     suite.addTest(TestNumber("test_or"))
     suite.addTest(TestNumber("test_xor"))
     suite.addTest(TestNumber("test_not"))
+    suite.addTest(TestNumber("test_mux"))
     suite.addTest(TestNumber("test_add"))
     suite.addTest(TestNumber("test_from_plaintext"))
     suite.addTest(TestNumber("test_decrypt"))

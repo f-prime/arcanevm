@@ -32,7 +32,11 @@ class FakeContext(context.Context):
         return ~(self.convert_to_int(bit1) | self.convert_to_int(bit2))
 
     def gate_mux(self, bit1, bit2, bit3):
-        raise NotImplemented("Not implemented")
+        bit1 = self.convert_to_int(bit1)
+        bit2 = self.convert_to_int(bit2)
+        bit3 = self.convert_to_int(bit3)
+
+        return (bit1 & bit2) | ((~bit1) & bit3)
 
     def gate_and(self, bit1, bit2):
         return self.convert_to_int(bit1) & self.convert_to_int(bit2)

@@ -7,25 +7,27 @@ import pprint
 import utils
 
 def run():
-    #ctx = NUFHEContext()
-    ctx = FakeContext()
+    ctx = NUFHEContext()
+    #ctx = FakeContext()
     
     secret_key = ctx.generate_keys()
 
     # Create tape with size of 2
     
     tape = Tape()
-    indices = tape.generate_tape(2, ctx, secret_key)
+    tape_indices = tape.generate_tape(2, ctx, secret_key)
 
     utils.flag = Number.from_plaintext(1, ctx, secret_key, size=1)
     utils.one = Number.from_plaintext(1, ctx, secret_key, size=1)
     utils.zero = Number.from_plaintext(0, ctx, secret_key, size=1)
-    utils.data_ptr = Number.from_plaintext(0, ctx, secret_key)
-    utils.instruction_ptr = Number.from_plaintext(0, ctx, secret_key)
 
+    # Initial state of machine
+
+    data_ptr = Number.from_plaintext(0, ctx, secret_key)
+    instruction_ptr = Number.from_plaintext(0, ctx, secret_key)
+
+    # Defines instructions
     
-    # Define instructions
-
     inc_data_ptr = Number.from_plaintext(1, ctx, secret_key)
     inc_data_cell = Number.from_plaintext(2, ctx, secret_key)
     dec_data_ptr = Number.from_plaintext(3, ctx, secret_key)
@@ -43,11 +45,21 @@ def run():
         "]":loop_back
     }
 
-    blind_machine = VirtualMachine(tape, indices, instruction_set)
+    instructions, instruction_indices = VirtualMachine.compile("++[>+++<-]", instruction_set, ctx, secret_key)
 
-    blind_machine.step(inc_data_cell)
-    blind_machine.step(inc_data_ptr)
-    blind_machine.step(inc_data_cell)
+    blind_machine = VirtualMachine(
+            tape,
+            tape_indices,
+            instruction_indices,
+            instruction_set,
+            instructions,
+            instruction_ptr,
+            data_ptr
+    )
+
+    
+
+    blind_machine.run()
 
     pprint.pprint(tape.decrypt_tape(secret_key))
 

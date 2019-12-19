@@ -118,7 +118,32 @@ class Number(object):
 
     def __sub__(self, num):
         raise NotImplemented("Subtraction is not yet implemented.")
-            
+    
+    def mux(self, num1, num2):
+        len1 = len(self.encrypted_bit_array)
+        len2 = len(num1.encrypted_bit_array)
+        len3 = len(num2.encrypted_bit_array)
+        is_bit = None
+
+        if len2 != len3:
+            raise ValueError("Num1 and Num2 need to be the same size")
+        
+        if len1 != 1 and (len1 != len2 or len1 != len3):
+            raise ValueError("Number must be either the same size as other inputs or of size 1")
+
+        elif len1 == 1:
+            is_bit = self.encrypted_bit_array[0]
+
+        output = []
+
+        for i, bit in enumerate(num1.encrypted_bit_array):
+            bit1 = is_bit if is_bit else self.encrypted_bit_array[i]
+            bit2 = num2.encrypted_bit_array[i]
+
+            output.append(bit1.mux(bit, bit2))
+        
+        return Number(output)
+
     def increment(self, to_inc_flag=None):
         carry = Bit.from_number(utils.one)
         if to_inc_flag:
