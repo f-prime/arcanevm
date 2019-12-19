@@ -101,6 +101,30 @@ class TestNumber(unittest.TestCase):
         self.assertEqual(two_dec.decrypt(self.sk, decimal=True), 1)
         self.assertEqual(three_dec.decrypt(self.sk, decimal=True), 2)
 
+    def test_increment_with_flag_true(self):
+        flag = self.one
+        three_inc = self.three.increment(flag)
+
+        self.assertEqual(three_inc.decrypt(self.sk, decimal=True), 4)
+
+    def test_increment_with_flag_false(self):
+        flag = self.zero
+        three_not_inc = self.three.increment(flag)
+
+        self.assertEqual(three_not_inc.decrypt(self.sk, decimal=True), 3)
+
+    def test_decrement_with_flag_true(self):
+        flag = self.one
+        three_dec = self.three.decrement(flag)
+
+        self.assertEqual(three_dec.decrypt(self.sk, decimal=True), 2)
+
+    def test_decrement_with_flag_false(self):
+        flag = self.zero
+        three_not_dec = self.three.decrement(flag)
+
+        self.assertEqual(three_not_dec.decrypt(self.sk, decimal=True), 3)
+
     def test_from_plaintext(self):
         one28 = Number.from_plaintext(128, self.context, self.sk)
         too_big = Number.from_plaintext(512, self.context, self.sk, size=8)
