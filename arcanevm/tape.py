@@ -10,8 +10,8 @@ class Tape(object):
     def add_cell(self, number):
         self.tape.append(number)
 
-    def decrypt_tape(self, context, secret_key):
+    def decrypt_tape(self, secret_key):
         return [
-            cell.decrypt(context, secret_key)
+            cell.decrypt(secret_key)
             for cell in self.tape
         ]

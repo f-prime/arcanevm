@@ -1,20 +1,13 @@
 from number import Number
 from tape import Tape
 from virtual_machine import VirtualMachine
-import nufhe
+from contexts.NUFHEContext import NUFHEContext
 import pprint
 import utils
 
 def run():
-    ctx = nufhe.Context()
-    secret_key, cloud_key = ctx.make_key_pair()
-    vm = ctx.make_virtual_machine(cloud_key) 
-
-    # Create tape
-    # Create VM
-    # Execute instruction
-    # Get output tape encrypted
-    # Decrypt tape to get execution results
+    ctx = NUFHEContext()
+    secret_key = ctx.generate_keys()
 
     tape = Tape()
     
@@ -27,18 +20,15 @@ def run():
         tape.add_cell(Number.from_plaintext(0, ctx, secret_key))
         indices.append(Number.from_plaintext(x, ctx, secret_key))
 
-    utils.logic = vm
-    utils.flag = Number.from_plaintext(1, ctx, secret_key, size=1) # Flag for conditions
-    utils.one = Number.from_plaintext(1, ctx, secret_key, size=1) # A one
-    utils.zero = Number.from_plaintext(0, ctx, secret_key, size=1) # A zero
-    utils.data_ptr = Number.from_plaintext(0, ctx, secret_key)  # Cell to perform op on
+    utils.flag = Number.from_plaintext(1, ctx, secret_key, size=1)
+    utils.one = Number.from_plaintext(1, ctx, secret_key, size=1)
+    utils.zero = Number.from_plaintext(0, ctx, secret_key, size=1)
+    utils.data_ptr = Number.from_plaintext(0, ctx, secret_key, size=1)
 
     blind_machine = VirtualMachine(tape, indices)
     
     # Add 1 instruction
     
-    
-    """
     for x in range(3):
         inc_data_ptr = Number.from_plaintext(0, ctx, secret_key)
         inc_data_cell = Number.from_plaintext(1, ctx, secret_key)
@@ -61,9 +51,9 @@ def run():
     print(diff.decrypt(ctx, secret_key))
     print(A, '-', B, "=", diff.decrypt(ctx, secret_key, decimal=True)) 
 
+    """
 
-    #pprint.pprint(tape.decrypt_tape(ctx, secret_key))
-
+    pprint.pprint(tape.decrypt_tape(secret_key))
 
 
 if __name__ == "__main__":

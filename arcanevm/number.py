@@ -47,7 +47,10 @@ class Number(object):
         other = self.encrypted_bit_array
         is_bit = False
     
-        if isinstance(encrypted_bit_array, Bit):
+        if len(self.encrypted_bit_array) == 1:
+            is_bit = True
+        
+        elif len(encrypted_bit_array) == 1:
             iterate = self.encrypted_bit_array
             other = encrypted_bit_array
             is_bit = True
@@ -58,7 +61,7 @@ class Number(object):
         output = []
 
         for i, bit1 in enumerate(iterate):
-            bit2 = other if is_bit else other[i]
+            bit2 = other[0] if is_bit else other[i]
 
             if op == '&':
                 result = bit1 & bit2
@@ -89,7 +92,7 @@ class Number(object):
         return Number([~bit for bit in self.encrypted_bit_array])
 
     def __add__(self, num):
-        carry = utils.zero
+        carry = Bit.from_number(utils.zero)
         
         output = []
         
@@ -98,8 +101,8 @@ class Number(object):
         for bit_i in range(len(self.encrypted_bit_array))[::-1]:
             bit_1 = self.encrypted_bit_array[bit_i]
             bit_2 = num.encrypted_bit_array[bit_i]
-           
-            output.append((bit_1 ^ bit_2 ^ carry))
+            
+            output.append(bit_1 ^ bit_2 ^ carry)
             carry = (bit_1 & bit_2) | (carry & (bit_1 ^ bit_2))
         
         return Number(output[::-1])
@@ -108,7 +111,7 @@ class Number(object):
         raise NotImplemented("Subtraction is not yet implemented.")
             
     def increment(self):
-        carry = utils.one
+        carry = Bit.from_number(utils.one)
         output = []
 
         for bit_i in range(len(self.encrypted_bit_array))[::-1]:
@@ -119,7 +122,7 @@ class Number(object):
         return Number(output[::-1])
 
     def decrement(self):
-        borrow = utils.one
+        borrow = utils.one.encrypted_bit_array[0]
         output = []
 
         for bit_i in range(len(self.encrypted_bit_array))[::-1]:

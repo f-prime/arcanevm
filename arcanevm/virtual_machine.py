@@ -11,7 +11,7 @@ class VirtualMachine(object):
     def step(self, inc_data_ptr, inc_data_cell):
         for i, encrypted_index in enumerate(self.encrypted_indices):
             flag = utils.flag | utils.one # Set flag to 1
-
+            
             encrypted_binary = self.tape.tape[i]
 
             flag = flag & ~(encrypted_index ^ utils.data_ptr) # Check if index equals pointer

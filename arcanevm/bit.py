@@ -6,6 +6,10 @@ class Bit(object):
     @staticmethod
     def from_plaintext(bit, ctx, secret_key):
         return Bit(ctx, ctx.encrypt(secret_key, [bit]))
+    
+    @staticmethod
+    def from_number(number):
+        return number.encrypted_bit_array[-1]
 
     def decrypt(self, secret_key):
         return int(self.ctx.decrypt(secret_key, self.encrypted_bit)[0])
@@ -25,7 +29,7 @@ class Bit(object):
     def __invert__(self):
         return Bit(self.ctx, self.ctx.gate_not(self.encrypted_bit))
 
-    def nand(self, bit1, bit2):
+    def nand(self, bit2):
         return Bit(self.ctx, self.ctx.gate_nand(self.encrypted_bit, bit2.encrypted_bit))
 
     def nor(self, bit2):
