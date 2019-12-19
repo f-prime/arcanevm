@@ -145,30 +145,34 @@ class Number(object):
         return Number(output)
 
     def increment(self, to_inc_flag=None):
-        carry = Bit.from_number(utils.one)
         if to_inc_flag:
-            carry = Bit.from_number(to_inc_flag) & carry
+            carry = Bit.from_number(to_inc_flag)
+        else:
+            carry = Bit.from_number(utils.one)
         
         output = []
 
         for bit_i in range(len(self.encrypted_bit_array))[::-1]:
             bit_1 = self.encrypted_bit_array[bit_i]
             output.append((bit_1 ^ carry))
-            carry = bit_1 & carry
+            if bit_i > 0:
+                carry = bit_1 & carry
 
         return Number(output[::-1])
 
     def decrement(self, to_dec_flag=None):
-        borrow = Bit.from_number(utils.one)
         if to_dec_flag:
-            borrow = Bit.from_number(to_dec_flag) & borrow
+            borrow = Bit.from_number(to_dec_flag)
+        else:
+            borrow = Bit.from_number(utils.one)
 
         output = []
 
         for bit_i in range(len(self.encrypted_bit_array))[::-1]:
             bit_1 = self.encrypted_bit_array[bit_i]
             output.append((bit_1 ^ borrow))
-            borrow = ~bit_1 & borrow
+            if bit_i > 0:
+                borrow = ~bit_1 & borrow
 
         return Number(output[::-1])
 
