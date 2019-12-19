@@ -1,16 +1,15 @@
+from bit import Bit
 import utils
 
 class Number(object):
-    def __init__(self, bit_array):
-        if type(bit_array) != list:
-            bit_array = [bit_array]
-        self.bit_array = bit_array
+    def __init__(self, encrypted_bit_array):
+        self.encrypted_bit_array = encrypted_bit_array
 
     @staticmethod
-    def from_plaintext(number, context, secret, size=8):
+    def from_plaintext(number, ctx, secret, size=8):
         array = Number.create_binary_array(number, size)
         for i, bit in enumerate(array):
-            array[i] = context.encrypt(secret, bit)
+            array[i] = Bit.from_plaintext(bit, ctx, secret) 
         return Number(array) 
     
     @staticmethod
@@ -22,71 +21,85 @@ class Number(object):
             number //= 2
         
         while len(binary) < size:
-            binary.insert(0, [0])
+            binary.insert(0, 0)
 
-        binary = binary[:size]  # All numbers are 8 bits
+        binary = binary[:size]
 
         return binary
 
 
-    def decrypt(self, context, secret, decimal=False):
+    def decrypt(self, secret, decimal=False):
         output = []
 
-        for bit in self.bit_array:
-            output.append(list(map(int, context.decrypt(secret, bit))))
+        for bit in self.encrypted_bit_array:
+            output.append(bit.decrypt(secret))
 
         if decimal:
             s = 0
             for i, num in enumerate(output[::-1]):
-                if num[0]:
+                if num:
                     s += 2 ** i
             return s
         return output
 
-    def __do_operation(self, bit_array, op):
-        if (len(bit_array) != 1 and len(self.bit_array) != 1) and len(bit_array) != len(self.bit_array):
-            raise ValueError("Bit arrays different sizes.")
-        
-        iterate_over = bit_array
-        if len(bit_array) == 1:
-            iterate_over = self.bit_array
-        else:
-            bit_array = self.bit_array
+    def __do_operation(self, encrypted_bit_array, op):
+        iterate = encrypted_bit_array
+        other = self.encrypted_bit_array
+        is_bit = False
+    
+        if isinstance(encrypted_bit_array, Bit):
+            iterate = self.encrypted_bit_array
+            other = encrypted_bit_array
+            is_bit = True
 
+        elif len(encrypted_bit_array) != len(self.encrypted_bit_array):
+            raise ValueError("Number objects must be the same size")
+        
         output = []
-        for i, bit in enumerate(iterate_over):
-            bit_on = bit_array[0] if len(bit_array) == 1 else bit_array[i]
-            output.append(op(bit, bit_on))
+
+        for i, bit1 in enumerate(iterate):
+            bit2 = other if is_bit else other[i]
+
+            if op == '&':
+                result = bit1 & bit2
+            elif op == '|':
+                result = bit1 | bit2
+            elif op == '^':
+                result = bit1 ^ bit2
+            else:
+                raise ValueError(f"Invalid operation {op}")
+
+            output.append(result)
         
         return Number(output)
 
     def __str__(self):
-        return f"Number(size={len(self.bit_array)})"
+        return f"Number(size={len(self.encrypted_bit_array)})"
 
     def __and__(self, num):
-        return self.__do_operation(num.bit_array, utils.logic.gate_and)
+        return self.__do_operation(num.encrypted_bit_array, '&')
 
     def __or__(self, num):
-        return self.__do_operation(num.bit_array, utils.logic.gate_or)
+        return self.__do_operation(num.encrypted_bit_array, '|')
 
     def __xor__(self, num):
-        return self.__do_operation(num.bit_array, utils.logic.gate_xor)
+        return self.__do_operation(num.encrypted_bit_array, '^')
 
     def __invert__(self):
-        return Number([utils.logic.gate_not(bit) for bit in self.bit_array])
+        return Number([~bit for bit in self.encrypted_bit_array])
 
     def __add__(self, num):
-        carry = Number(utils.zero.bit_array)
+        carry = utils.zero
         
         output = []
         
         # Treverse in reverse
     
-        for bit_i in range(len(self.bit_array))[::-1]:
-            bit_1 = Number(self.bit_array[bit_i])
-            bit_2 = Number(num.bit_array[bit_i])
+        for bit_i in range(len(self.encrypted_bit_array))[::-1]:
+            bit_1 = self.encrypted_bit_array[bit_i]
+            bit_2 = num.encrypted_bit_array[bit_i]
            
-            output.append((bit_1 ^ bit_2 ^ carry).bit_array[0])
+            output.append((bit_1 ^ bit_2 ^ carry))
             carry = (bit_1 & bit_2) | (carry & (bit_1 ^ bit_2))
         
         return Number(output[::-1])
@@ -95,23 +108,23 @@ class Number(object):
         raise NotImplemented("Subtraction is not yet implemented.")
             
     def increment(self):
-        carry = Number(utils.one.bit_array)
+        carry = utils.one
         output = []
 
-        for bit_i in range(len(self.bit_array))[::-1]:
-            bit_1 = Number(self.bit_array[bit_i])
-            output.append((bit_1 ^ carry).bit_array[0])
+        for bit_i in range(len(self.encrypted_bit_array))[::-1]:
+            bit_1 = self.encrypted_bit_array[bit_i]
+            output.append((bit_1 ^ carry))
             carry = bit_1 & carry
 
         return Number(output[::-1])
 
     def decrement(self):
-        borrow = Number(utils.one.bit_array)
+        borrow = utils.one
         output = []
 
-        for bit_i in range(len(self.bit_array))[::-1]:
-            bit_1 = Number(self.bit_array[bit_i])
-            output.append((bit_1 ^ borrow).bit_array[0])
+        for bit_i in range(len(self.encrypted_bit_array))[::-1]:
+            bit_1 = self.encrypted_bit_array[bit_i]
+            output.append((bit_1 ^ borrow))
             borrow = ~bit_1 & borrow
 
         return Number(output[::-1])

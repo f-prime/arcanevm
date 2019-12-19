@@ -4,23 +4,32 @@ class Bit(object):
         self.encrypted_bit = encrypted_bit
 
     @staticmethod
-    def from_plaintext(self, bit, ctx, secret_key):
-        return Bit(ctx, self.ctx.encrypt(secret_key, bit)
+    def from_plaintext(bit, ctx, secret_key):
+        return Bit(ctx, ctx.encrypt(secret_key, [bit]))
 
     def decrypt(self, secret_key):
-        return self.ctx.decrypt(secret_key, self.encrypted_bit)
+        return int(self.ctx.decrypt(secret_key, self.encrypted_bit)[0])
 
     def __str__(self):
-        return "Bit({self.encrypted_bit})"
+        return f"Bit({self.encrypted_bit})"
 
-    def __and__(self, bit1, bit2):
-        return self.ctx.gate_and(bit1, bit2)
+    def __and__(self, bit2):
+        return Bit(self.ctx, self.ctx.gate_and(self.encrypted_bit, bit2.encrypted_bit))
 
-    def __or__(self, bit1, bit2):
-        return self.ctx.gate_or(bit1, bit2)
+    def __or__(self, bit2):
+        return Bit(self.ctx, self.ctx.gate_or(self.encrypted_bit, bit2.encrypted_bit))
 
-    def __xor__(self, bit1, bit2):
-        return self.ctx.gate_xor(bit1, bit2)
+    def __xor__(self, bit2):
+        return Bit(self.ctx, self.ctx.gate_xor(self.encrypted_bit, bit2.encrypted_bit))
 
-    def __invert__(self, bit):
-        return self.ctx.gate_not(bit)
+    def __invert__(self):
+        return Bit(self.ctx, self.ctx.gate_not(self.encrypted_bit))
+
+    def nand(self, bit1, bit2):
+        return Bit(self.ctx, self.ctx.gate_nand(self.encrypted_bit, bit2.encrypted_bit))
+
+    def nor(self, bit2):
+        return Bit(self.ctx, self.ctx.gate_nor(self.encrypted_bit, bit2.encrypted_bit))
+
+    def mux(self, bit2, bit3):
+        return Bit(self.ctx, self.ctx.gate_mux(self.encrypted_bit, bit2.encrypted_bit, bit3.encrypted_bit))
