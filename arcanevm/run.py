@@ -2,11 +2,13 @@ from number import Number
 from tape import Tape
 from virtual_machine import VirtualMachine
 from contexts.NUFHEContext import NUFHEContext
+from contexts.FakeContext import FakeContext
 import pprint
 import utils
 
 def run():
     ctx = NUFHEContext()
+    #ctx = FakeContext()
     secret_key = ctx.generate_keys()
 
     tape = Tape()
