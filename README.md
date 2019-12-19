@@ -4,6 +4,8 @@ ArcaneVM is a virtual machine that can execute instructions encrypted with [Full
 
 ArcaneVM relies on the [nufhe](https://github.com/nucypher/nufhe) library for its FHE implementation.
 
+Join the chat on Matrix [#arcanevm:matrix.org](https://riot.im/app/#/room/#arcanevm:matrix.org) 
+
 # About
 
 Fully Homomorphic Encryption (FHE) is a reletively new encryption technology that allows for computations on encrypted data. This allows us not only to encrypt the inputs but also encrypt the computations themselves. The output is also encrypted and when decrypted gives the plaintext result of the computation. 
