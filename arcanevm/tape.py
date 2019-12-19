@@ -15,6 +15,6 @@ class Tape(object):
 
     def decrypt_tape(self, secret_key):
         return [
-            cell.decrypt(secret_key)
+            cell.decrypt(secret_key, decimal=True)
             for cell in self.tape
         ]

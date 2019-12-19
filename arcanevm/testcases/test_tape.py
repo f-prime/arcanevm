@@ -21,4 +21,4 @@ class TestTape(unittest.TestCase):
         tape.add_cell(self.zero)
         tape.add_cell(self.one)
 
-        self.assertEqual(tape.decrypt_tape(self.sk), [[0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 1]])
+        self.assertEqual(tape.decrypt_tape(self.sk), [0, 1])
