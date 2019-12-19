@@ -4,3 +4,4 @@ one = None
 zero = None
 flag = None
 data_ptr = None
+instruction_ptr = None

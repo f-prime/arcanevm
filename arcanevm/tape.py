@@ -18,3 +18,11 @@ class Tape(object):
             cell.decrypt(secret_key, decimal=True)
             for cell in self.tape
         ]
+
+    def generate_tape(self, size, ctx, secret_key):
+        indices = [] # Encrypt indices before feeding into VM
+        for x in range(size):
+            self.add_cell(Number.from_plaintext(0, ctx, secret_key))
+            indices.append(Number.from_plaintext(x, ctx, secret_key))
+
+        return indices

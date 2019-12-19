@@ -7,53 +7,47 @@ import pprint
 import utils
 
 def run():
-    ctx = NUFHEContext()
-    #ctx = FakeContext()
+    #ctx = NUFHEContext()
+    ctx = FakeContext()
+    
     secret_key = ctx.generate_keys()
 
+    # Create tape with size of 2
+    
     tape = Tape()
-    
-    # Create tape of size n
-    
-    n = 2
-
-    indices = [] # Encrypt indices before feeding into VM
-    for x in range(n):
-        tape.add_cell(Number.from_plaintext(0, ctx, secret_key))
-        indices.append(Number.from_plaintext(x, ctx, secret_key))
+    indices = tape.generate_tape(2, ctx, secret_key)
 
     utils.flag = Number.from_plaintext(1, ctx, secret_key, size=1)
     utils.one = Number.from_plaintext(1, ctx, secret_key, size=1)
     utils.zero = Number.from_plaintext(0, ctx, secret_key, size=1)
-    utils.data_ptr = Number.from_plaintext(0, ctx, secret_key, size=1)
+    utils.data_ptr = Number.from_plaintext(0, ctx, secret_key)
+    utils.instruction_ptr = Number.from_plaintext(0, ctx, secret_key)
 
-    blind_machine = VirtualMachine(tape, indices)
     
-    # Add 1 instruction
-    
-    for x in range(3):
-        inc_data_ptr = Number.from_plaintext(0, ctx, secret_key)
-        inc_data_cell = Number.from_plaintext(1, ctx, secret_key)
+    # Define instructions
 
-        blind_machine.step(inc_data_ptr, inc_data_cell)
-    
+    inc_data_ptr = Number.from_plaintext(1, ctx, secret_key)
+    inc_data_cell = Number.from_plaintext(2, ctx, secret_key)
+    dec_data_ptr = Number.from_plaintext(3, ctx, secret_key)
+    dec_data_cell = Number.from_plaintext(4, ctx, secret_key)
+    mark_loop = Number.from_plaintext(5, ctx, secret_key)
+    loop_back = Number.from_plaintext(6, ctx, secret_key)
 
-    """
 
-    #print(utils.one + utils.one)
-    
-    A = 127
-    B = 1
+    instruction_set = {
+        "+":inc_data_cell,
+        "-":dec_data_cell,
+        ">":inc_data_ptr,
+        "<":dec_data_ptr,
+        "[":mark_loop,
+        "]":loop_back
+    }
 
-    sum = Number.from_plaintext(A, ctx, secret_key) + Number.from_plaintext(B, ctx, secret_key)
-    diff = Number.from_plaintext(A, ctx, secret_key) - Number.from_plaintext(B, ctx, secret_key)
+    blind_machine = VirtualMachine(tape, indices, instruction_set)
 
-    print(sum.decrypt(ctx, secret_key))
-    print(A, "+", B, "=", sum.decrypt(ctx, secret_key, decimal=True))
-    print(diff.decrypt(ctx, secret_key))
-    print(A, '-', B, "=", diff.decrypt(ctx, secret_key, decimal=True)) 
-
-    """
+    blind_machine.step(inc_data_cell)
+    blind_machine.step(inc_data_ptr)
+    blind_machine.step(inc_data_cell)
 
     pprint.pprint(tape.decrypt_tape(secret_key))
 

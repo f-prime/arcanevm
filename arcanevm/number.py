@@ -11,7 +11,11 @@ class Number(object):
         for i, bit in enumerate(array):
             array[i] = Bit.from_plaintext(bit, ctx, secret) 
         return Number(array) 
-    
+   
+    @staticmethod
+    def from_bit(bit):
+        return Number([bit])
+
     @staticmethod
     def create_binary_array(number, size):
         binary = []
@@ -45,15 +49,15 @@ class Number(object):
     def __do_operation(self, encrypted_bit_array, op):
         iterate = encrypted_bit_array
         other = self.encrypted_bit_array
-        is_bit = False
+        is_bit = None
     
         if len(self.encrypted_bit_array) == 1:
-            is_bit = True
+            is_bit = other[0]
         
         elif len(encrypted_bit_array) == 1:
             iterate = self.encrypted_bit_array
             other = encrypted_bit_array
-            is_bit = True
+            is_bit = other[0]
 
         elif len(encrypted_bit_array) != len(self.encrypted_bit_array):
             raise ValueError("Number objects must be the same size")
@@ -61,7 +65,7 @@ class Number(object):
         output = []
 
         for i, bit1 in enumerate(iterate):
-            bit2 = other[0] if is_bit else other[i]
+            bit2 = is_bit if is_bit else other[i]
 
             if op == '&':
                 result = bit1 & bit2
@@ -71,9 +75,14 @@ class Number(object):
                 result = bit1 ^ bit2
             else:
                 raise ValueError(f"Invalid operation {op}")
-
-            output.append(result)
+            
+            if is_bit:
+                is_bit = result
+            else:
+                output.append(result)
         
+        if is_bit:
+            return Number.from_bit(is_bit)
         return Number(output)
 
     def __str__(self):
@@ -110,8 +119,11 @@ class Number(object):
     def __sub__(self, num):
         raise NotImplemented("Subtraction is not yet implemented.")
             
-    def increment(self):
+    def increment(self, to_inc_flag=None):
         carry = Bit.from_number(utils.one)
+        if to_inc_flag:
+            carry = Bit.from_number(to_inc_flag) & carry
+        
         output = []
 
         for bit_i in range(len(self.encrypted_bit_array))[::-1]:
@@ -121,8 +133,11 @@ class Number(object):
 
         return Number(output[::-1])
 
-    def decrement(self):
-        borrow = utils.one.encrypted_bit_array[0]
+    def decrement(self, to_dec_flag=True):
+        borrow = Bit.from_number(utils.one)
+        if to_dec_flag:
+            borrow = Bit.from_number(to_dec_flag) & borrow
+
         output = []
 
         for bit_i in range(len(self.encrypted_bit_array))[::-1]:
