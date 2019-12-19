@@ -158,7 +158,7 @@ class Number(object):
 
         return Number(output[::-1])
 
-    def decrement(self, to_dec_flag=True):
+    def decrement(self, to_dec_flag=None):
         borrow = Bit.from_number(utils.one)
         if to_dec_flag:
             borrow = Bit.from_number(to_dec_flag) & borrow

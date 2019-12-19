@@ -69,7 +69,8 @@ class VirtualMachine(object):
     def compile(code, instruction_set, ctx, secret_key):
         instructions = []
         for char in code:
-            instructions.append(instruction_set[char])
+            if char in instruction_set:
+                instructions.append(instruction_set[char])
 
         instruction_indices = []
         

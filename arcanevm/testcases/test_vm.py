@@ -10,37 +10,54 @@ class TestVirtualMachine(unittest.TestCase):
         ctx = FakeContext()
         secret_key = ctx.generate_keys()
 
-        # Create tape
-        # Create VM
-        # Execute instruction
-        # Get output tape encrypted
-        # Decrypt tape to get execution results
-
         tape = Tape()
+        tape_indices = tape.generate_tape(2, ctx, secret_key)
 
-        # Create tape of size n
+        utils.flag = Number.from_plaintext(1, ctx, secret_key, size=1)
+        utils.one = Number.from_plaintext(1, ctx, secret_key, size=1)
+        utils.zero = Number.from_plaintext(0, ctx, secret_key, size=1)
+
+        # Initial state of machine
+
+        data_ptr = Number.from_plaintext(0, ctx, secret_key)
+        instruction_ptr = Number.from_plaintext(0, ctx, secret_key)
+
+        # Defines instructions
         
-        n = 2
+        inc_data_ptr = Number.from_plaintext(1, ctx, secret_key)
+        inc_data_cell = Number.from_plaintext(2, ctx, secret_key)
+        dec_data_ptr = Number.from_plaintext(3, ctx, secret_key)
+        dec_data_cell = Number.from_plaintext(4, ctx, secret_key)
+        mark_loop = Number.from_plaintext(5, ctx, secret_key)
+        loop_back = Number.from_plaintext(6, ctx, secret_key)
 
-        indices = [] # Encrypt indices before feeding into VM
-        for x in range(n):
-            tape.add_cell(Number.from_plaintext(0, ctx, secret_key))
-            indices.append(Number.from_plaintext(x, ctx, secret_key))
 
-        utils.flag = Number.from_plaintext(1, ctx, secret_key, size=1) # Flag for conditions
-        utils.one = Number.from_plaintext(1, ctx, secret_key, size=1) # A one
-        utils.zero = Number.from_plaintext(0, ctx, secret_key, size=1) # A zero
-        utils.data_ptr = Number.from_plaintext(0, ctx, secret_key)  # Cell to perform op on
+        instruction_set = {
+            "+":inc_data_cell,
+            "-":dec_data_cell,
+            ">":inc_data_ptr,
+            "<":dec_data_ptr,
+            "[":mark_loop,
+            "]":loop_back
+        }
 
-        self.blind_machine = VirtualMachine(tape, indices)
+        instructions, instruction_indices = VirtualMachine.compile("++[>+++<-]", instruction_set, ctx, secret_key)
+            
+        self.blind_machine = VirtualMachine(
+                tape,
+                tape_indices,
+                instruction_indices,
+                instruction_set,
+                instructions,
+                instruction_ptr,
+                data_ptr
+        )
+
         self.context = ctx
         self.secret_key = secret_key
         self.tape = tape
 
     def test_machine_step(self):
-        incr_data_ptr = Number.from_plaintext(0, self.context, self.secret_key)
-        inc_data_cell = Number.from_plaintext(1, self.context, self.secret_key)
-
-        self.blind_machine.step(incr_data_ptr, inc_data_cell)
+        self.blind_machine.run()
         
-        self.assertEqual(self.tape.decrypt_tape(self.secret_key), [1, 0])
+        self.assertEqual(self.tape.decrypt_tape(self.secret_key), [0, 6])
