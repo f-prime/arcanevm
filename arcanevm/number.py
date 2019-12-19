@@ -21,7 +21,7 @@ class Number(object):
             number //= 2
         
         while len(binary) < size:
-            binary.insert(0, 0)
+            binary.insert(0, [0])
 
         binary = binary[:size]
 

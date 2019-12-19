@@ -4,9 +4,12 @@ from typing import List
 
 
 class Tape(object):
-    def __init__(self, tape = []):
-        self.tape = tape
-   
+    def __init__(self, tape = None):
+        if tape:
+            self.tape = tape
+        else:
+            self.tape = []
+
     def add_cell(self, number):
         self.tape.append(number)
 

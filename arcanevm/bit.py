@@ -12,7 +12,12 @@ class Bit(object):
         return number.encrypted_bit_array[-1]
 
     def decrypt(self, secret_key):
-        return int(self.ctx.decrypt(secret_key, self.encrypted_bit)[0])
+        decrypted = self.ctx.decrypt(secret_key, self.encrypted_bit)[0]
+        
+        if type(decrypted) == list:
+            decrypted = decrypted[0]
+        
+        return int(decrypted)
 
     def __str__(self):
         return f"Bit({self.encrypted_bit})"

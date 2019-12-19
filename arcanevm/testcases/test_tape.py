@@ -1,12 +1,12 @@
 import unittest
 from tape import Tape
 from number import Number
-import nufhe
+from contexts.FakeContext import FakeContext
 
 class TestTape(unittest.TestCase):
     def setUp(self):
-        self.context = nufhe.Context()
-        self.sk, self.ck = self.context.make_key_pair()
+        self.context = FakeContext()
+        self.sk = self.context.generate_keys()
 
         self.one = Number.from_plaintext(1, self.context, self.sk)
         self.zero = Number.from_plaintext(0, self.context, self.sk)
@@ -21,4 +21,4 @@ class TestTape(unittest.TestCase):
         tape.add_cell(self.zero)
         tape.add_cell(self.one)
 
-        self.assertEqual(tape.decrypt_tape(self.context, self.sk), [[[0], [0], [0], [0], [0], [0], [0], [0]], [[0], [0], [0], [0], [0], [0], [0], [1]]])
+        self.assertEqual(tape.decrypt_tape(self.sk), [[0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 1]])

@@ -5,6 +5,8 @@ class FakeContext(context.Context):
         pass
 
     def decrypt(self, secret_key, bit):
+        if type(bit) == list:
+            return bit
         return [bit]
 
     def encrypt(self, secret_key, bit):
@@ -42,4 +44,4 @@ class FakeContext(context.Context):
         return self.convert_to_int(bit1) ^ self.convert_to_int(bit2)
 
     def gate_not(self, bit):
-        return ~self.convert_to_int(bit)
+        return int(not self.convert_to_int(bit))
