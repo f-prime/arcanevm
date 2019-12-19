@@ -107,6 +107,16 @@ class TestNumber(unittest.TestCase):
         self.assertEqual(three_dec.decrypt(self.sk, decimal=True), 2)
         self.assertEqual(two_five_five_dec.decrypt(self.sk, decimal=True), 254)
 
+    def test_increment_overflow(self):
+        two_five_five_inc = self.two_five_five.increment()
+
+        self.assertEqual(two_five_five_inc.decrypt(self.sk, decimal=True), 0)
+
+    def test_decrement_overflow(self):
+        zero_dec = self.zero.decrement()
+
+        self.assertEqual(zero_dec.decrypt(self.sk, decimal=True), 255)
+
     def test_increment_with_flag_true(self):
         flag = self.one
         three_inc = self.three.increment(flag)
