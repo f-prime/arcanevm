@@ -12,6 +12,8 @@ class TestNumber(unittest.TestCase):
         self.two = Number.from_plaintext(2, self.context, self.sk)
         self.three = Number.from_plaintext(3, self.context, self.sk)
         self.zero = Number.from_plaintext(0, self.context, self.sk)
+        self.two_five_four = Number.from_plaintext(254, self.context, self.sk)
+        self.two_five_five = Number.from_plaintext(255, self.context, self.sk)
 
         utils.zero = Number.from_plaintext(0, self.context, self.sk, size=1)
         utils.one = Number.from_plaintext(1, self.context, self.sk, size=1)
@@ -86,20 +88,58 @@ class TestNumber(unittest.TestCase):
         one_inc = self.one.increment()
         two_inc = self.two.increment()
         three_inc = self.three.increment()
+        two_five_four_inc = self.two_five_four.increment()
 
         self.assertEqual(zero_inc.decrypt(self.sk, decimal=True), 1)
         self.assertEqual(one_inc.decrypt(self.sk, decimal=True), 2)
         self.assertEqual(two_inc.decrypt(self.sk, decimal=True), 3)
         self.assertEqual(three_inc.decrypt(self.sk, decimal=True), 4)
+        self.assertEqual(two_five_four_inc.decrypt(self.sk, decimal=True), 255)
 
     def test_decrement(self):
         one_dec = self.one.decrement()
         two_dec = self.two.decrement()
         three_dec = self.three.decrement()
+        two_five_five_dec = self.two_five_five.decrement()
 
         self.assertEqual(one_dec.decrypt(self.sk, decimal=True), 0)
         self.assertEqual(two_dec.decrypt(self.sk, decimal=True), 1)
         self.assertEqual(three_dec.decrypt(self.sk, decimal=True), 2)
+        self.assertEqual(two_five_five_dec.decrypt(self.sk, decimal=True), 254)
+
+    def test_increment_overflow(self):
+        two_five_five_inc = self.two_five_five.increment()
+
+        self.assertEqual(two_five_five_inc.decrypt(self.sk, decimal=True), 0)
+
+    def test_decrement_overflow(self):
+        zero_dec = self.zero.decrement()
+
+        self.assertEqual(zero_dec.decrypt(self.sk, decimal=True), 255)
+
+    def test_increment_with_flag_true(self):
+        flag = self.one
+        three_inc = self.three.increment(flag)
+
+        self.assertEqual(three_inc.decrypt(self.sk, decimal=True), 4)
+
+    def test_increment_with_flag_false(self):
+        flag = self.zero
+        three_not_inc = self.three.increment(flag)
+
+        self.assertEqual(three_not_inc.decrypt(self.sk, decimal=True), 3)
+
+    def test_decrement_with_flag_true(self):
+        flag = self.one
+        three_dec = self.three.decrement(flag)
+
+        self.assertEqual(three_dec.decrypt(self.sk, decimal=True), 2)
+
+    def test_decrement_with_flag_false(self):
+        flag = self.zero
+        three_not_dec = self.three.decrement(flag)
+
+        self.assertEqual(three_not_dec.decrypt(self.sk, decimal=True), 3)
 
     def test_from_plaintext(self):
         one28 = Number.from_plaintext(128, self.context, self.sk)
