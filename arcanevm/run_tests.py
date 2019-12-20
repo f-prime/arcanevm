@@ -1,34 +1,19 @@
 import unittest
-from testcases.test_number import TestNumber
-from testcases.test_tape import TestTape
-from testcases.test_vm import TestVirtualMachine
+import os
+import sys
 
-def test_suite():
-    suite = unittest.TestSuite()
-    
-    suite.addTest(TestNumber("test_binary"))
-    suite.addTest(TestNumber("test_and"))
-    suite.addTest(TestNumber("test_or"))
-    suite.addTest(TestNumber("test_xor"))
-    suite.addTest(TestNumber("test_not"))
-    suite.addTest(TestNumber("test_mux"))
-    suite.addTest(TestNumber("test_add"))
-    suite.addTest(TestNumber("test_from_plaintext"))
-    suite.addTest(TestNumber("test_decrypt"))
-    suite.addTest(TestNumber("test_increment"))
-    suite.addTest(TestNumber("test_decrement"))
-    suite.addTest(TestNumber("test_increment_with_flag_true"))
-    suite.addTest(TestNumber("test_increment_with_flag_false"))
-    suite.addTest(TestNumber("test_decrement_with_flag_true"))
-    suite.addTest(TestNumber("test_decrement_with_flag_false"))
-    
-    suite.addTest(TestTape("test_create_tape"))
-    suite.addTest(TestTape("test_add_cell"))
-
-    suite.addTest(TestVirtualMachine("test_machine_step"))
-
-    return suite
+def discover_recursive(suit, path):
+    for i in os.listdir(path):
+        sub = path + os.path.sep + i
+        if os.path.isdir(sub):
+            if os.path.basename(sub) == 'testcases':
+                suite.addTest(unittest.TestLoader().discover(sub))
+            else:
+                discover_recursive(suit, sub)
 
 if __name__ == "__main__":
+    suite = unittest.TestSuite()
+    discover_recursive(suite, os.path.dirname(sys.argv[0]))
     runner = unittest.TextTestRunner()
-    runner.run(test_suite())
+    result = runner.run(suite)
+    exit(0 if result.wasSuccessful() else 1)
