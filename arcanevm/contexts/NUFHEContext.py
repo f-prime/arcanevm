@@ -40,6 +40,9 @@ class NUFHEContext(context.Context):
 
         return self.vm.gate_mux(bit1, bit2, bit3)
 
+    def gate_xnor(self, bit1, bit2):
+        return self.vm.gate_xnor(bit1, bit2)
+
     def gate_and(self, bit1, bit2):
         return self.vm.gate_and(bit1, bit2)
 
