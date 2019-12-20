@@ -33,6 +33,24 @@ class TestNumber(unittest.TestCase):
         self.assertEqual(three, [[0],[0],[0],[0],[0],[0],[1],[1]])
         self.assertEqual(flag, [[1]])
 
+    def test_nor(self):
+        one_nor_zero = utils.one.nor(utils.zero)
+        one_nor_one = utils.one.nor(utils.one)
+        zero_nor_zero = utils.zero.nor(utils.zero)
+
+        self.assertEqual(one_nor_zero.decrypt(self.sk, decimal=True), 0)
+        self.assertEqual(one_nor_one.decrypt(self.sk, decimal=True), 0)
+        self.assertEqual(zero_nor_zero.decrypt(self.sk, decimal=True), 1)
+    
+    def test_xnor(self):
+        one_xnor_zero = utils.one.xnor(utils.zero)
+        one_xnor_one = utils.one.xnor(utils.one)
+        zero_xnor_zero = utils.zero.xnor(utils.zero)
+        
+        self.assertEqual(one_xnor_zero.decrypt(self.sk, decimal=True), 0)
+        self.assertEqual(one_xnor_one.decrypt(self.sk, decimal=True), 1)
+        self.assertEqual(zero_xnor_zero.decrypt(self.sk, decimal=True), 1)
+
     def test_and(self):
         one_and_two = self.one & self.two
         two_and_three = self.two & self.three

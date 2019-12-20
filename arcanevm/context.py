@@ -26,7 +26,12 @@ class Context(ABC):
     def gate_nor(self, bit1, bit2):
         pass
     
+    @abstractmethod
     def gate_nand(self, bit1, bit2):
+        pass
+
+    @abstractmethod
+    def gate_xnor(self, bit1, bit2):
         pass
 
     @abstractmethod

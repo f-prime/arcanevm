@@ -73,6 +73,10 @@ class Number(object):
                 result = bit1 | bit2
             elif op == '^':
                 result = bit1 ^ bit2
+            elif op == 'nor':
+                result = bit1.nor(bit2)
+            elif op == 'xnor':
+                result = bit1.xnor(bit2)
             else:
                 raise ValueError(f"Invalid operation {op}")
             
@@ -119,6 +123,12 @@ class Number(object):
     def __sub__(self, num):
         raise NotImplemented("Subtraction is not yet implemented.")
     
+    def nor(self, num):
+        return self.__do_operation(num.encrypted_bit_array, 'nor')
+
+    def xnor(self, num):
+        return self.__do_operation(num.encrypted_bit_array, 'xnor')
+
     def mux(self, num1, num2):
         len1 = len(self.encrypted_bit_array)
         len2 = len(num1.encrypted_bit_array)

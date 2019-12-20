@@ -40,5 +40,8 @@ class Bit(object):
     def nor(self, bit2):
         return Bit(self.ctx, self.ctx.gate_nor(self.encrypted_bit, bit2.encrypted_bit))
 
+    def xnor(self, bit2):
+        return Bit(self.ctx, self.ctx.gate_xnor(self.encrypted_bit, bit2.encrypted_bit))
+
     def mux(self, bit2, bit3):
         return Bit(self.ctx, self.ctx.gate_mux(self.encrypted_bit, bit2.encrypted_bit, bit3.encrypted_bit))
