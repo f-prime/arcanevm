@@ -25,10 +25,10 @@ class VirtualMachine(object):
 
             encrypted_binary = self.tape.tape[i]
 
-            is_correct_index = flag & ~(encrypted_index ^ self.data_ptr) # Check if index equals pointer
+            is_correct_index = flag & encrypted_index.xnor(self.data_ptr) # Check if index equals pointer
         
             for instruction in self.instruction_set:
-                is_correct_instruction = flag & ~(self.instruction_set[instruction] ^ instruction_on)
+                is_correct_instruction = flag & self.instruction_set[instruction].xnor(instruction_on)
                 
                 should_process = is_correct_instruction & is_correct_index & is_correct_instruction_ptr
                 
@@ -60,7 +60,7 @@ class VirtualMachine(object):
             
             for i, instruction_i in enumerate(self.encrypted_instruction_indices):
                 instruction = self.instructions[i]
-                is_correct_instruction_ptr = utils.one & ~(instruction_i ^ self.instruction_ptr)
+                is_correct_instruction_ptr = utils.one & instruction_i.xnor(self.instruction_ptr)
                 self.step(instruction, is_correct_instruction_ptr)
             
             self.instruction_ptr = self.instruction_ptr.increment()
