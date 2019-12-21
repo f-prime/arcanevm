@@ -39,6 +39,7 @@ run("++[>+++<-]>>", tape_size=5)
 
 # Build
 
-`sudo apt install python3-pyopencl`
-
-`pip3 install -r requirements.txt`
+```bash
+sudo apt install python3-pyopencl
+pip3 install -r requirements.txt
+```
