@@ -25,7 +25,7 @@ All integers in ArcaneVM are 8 bits.
 
 ### Execute Brainfuck code
 
-```
+```python
 from arcanevm import run
 
 run("++[>+++<-]>>", tape_size=5)
